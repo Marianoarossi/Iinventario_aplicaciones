@@ -8,6 +8,7 @@ import re
 # ##############################################
 # MODELO
 # ##############################################
+from tkinter.messagebox import OK
 
 
 def conexion():
@@ -73,20 +74,19 @@ def modificar(tree):
 
 def borrar(tree):
     valor = tree.selection()
-    print(valor)  # ('I005',)
     item = tree.item(valor)
-    print(item)  # {'text': 5, 'image': '', 'values': ['daSDasd', '13.0', '2.0'], 'open': 0, 'tags': ''}
-    print(item['text'])
     mi_id = item['text']
+    if messagebox.askokcancel("Atencion",f"Está seguro que desea eliminar la Aplicacion con ID: {mi_id}"):
+        con = conexion()
+        cursor = con.cursor()
+        # mi_id = int(mi_id)
+        data = (mi_id,)
+        sql = "DELETE FROM aplicaciones WHERE id = ?;"
+        cursor.execute(sql, data)
+        con.commit()
+        tree.delete(valor)
+        messagebox.showinfo("Atención", f"La aplicación {mi_id} se eliminó correctamente")
 
-    con = conexion()
-    cursor = con.cursor()
-    # mi_id = int(mi_id)
-    data = (mi_id,)
-    sql = "DELETE FROM aplicaciones WHERE id = ?;"
-    cursor.execute(sql, data)
-    con.commit()
-    tree.delete(valor)
 
 
 def actualizar_treeview(mitreview):
@@ -170,6 +170,6 @@ boton_borrar = Button(root, text="Borrar", command=lambda: borrar(tree))
 boton_borrar.grid(row=8, column=1)
 
 boton_modificar = Button(root, text="Modificar", command=lambda: modificar(tree))
-boton_modificar.grid(row=8, column=1)
+boton_modificar.grid(row=9, column=1)
 
 root.mainloop()
