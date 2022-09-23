@@ -40,17 +40,26 @@ except:
     print("Hay un error")
 
 
-def val_string( nombre_campo:str, cadena:str) -> str:
+def valid_string( nombre_campo:str, cadena:str) -> str:
     patron_string = "^[A-Za-záéíóú]*$"
     if not re.match(patron_string, cadena):
-        return f"El {nombre_campo} tiene caracteres inválidos \n"
+        return f"El {nombre_campo} tiene caracteres inválidos. Solo se pueden ingresar letras de la a la z \n"
     else:
         return ''
 
 
-def alta(nombre: str, tipo: str, nivel: int, ruta: str, descripcion: str, tree):
+def valid_int( nombre_campo:str, cadena:str) -> str:
+    patron_num = '^([0-9])*$'
+    if not re.match(patron_num, cadena):
+        return f"El {nombre_campo} tiene caracteres inválidos. Solo se pueden números \n"
+    else:
+        return ''
+
+
+def alta(nombre: str, tipo: str, nivel, ruta: str, descripcion: str, tree):
     errores:str = ''
-    errores += val_string('Nombre de la Aplicación', nombre)
+    errores += valid_string('Nombre de la Aplicación', nombre)
+    errores += valid_int('Nivel de Riesgo', nivel)
     if errores == '':
         con = conexion()
         cursor = con.cursor()
@@ -86,7 +95,6 @@ def borrar(tree):
         con.commit()
         tree.delete(valor)
         messagebox.showinfo("Atención", f"La aplicación {mi_id} se eliminó correctamente")
-
 
 
 def actualizar_treeview(mitreview):
@@ -127,7 +135,7 @@ descripcion = Label(root, text="Descripción")
 descripcion.grid(row=5, column=0, sticky=W)
 
 # Defino variables para tomar valores de campos de entrada
-nombre_val, tipo_val, nivel_val, ruta_val, descripcion_val = StringVar(), StringVar(), IntVar(), StringVar(), StringVar()
+nombre_val, tipo_val, nivel_val, ruta_val, descripcion_val = StringVar(), StringVar(), StringVar(), StringVar(), StringVar()
 w_ancho = 20
 
 entrada_nombre = Entry(root, textvariable=nombre_val, width=w_ancho)
