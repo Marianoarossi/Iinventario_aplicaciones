@@ -1,27 +1,19 @@
-import tkinter
 from tkinter import *
-from tkinter  import messagebox 
+from tkinter import messagebox
 import sqlite3
 from tkinter import ttk
 import re
+
 
 # ##############################################
 # MODELO
 # ##############################################
 
 
-
 def conexion():
     con = sqlite3.connect("mibase.db")
     return con
 
-
-try:
-    conexion()
-    crear_tabla()
-    messagebox.showinfo("CONEXION","Base de Datos Creada exitosamente")
-except:
-    print("Hay un error")
 
 def crear_tabla():
     con = conexion()
@@ -38,13 +30,19 @@ def crear_tabla():
     con.commit()
 
 
+try:
+    conexion()
+    crear_tabla()
+    messagebox.showinfo("CONEXION", "Base de Datos Creada exitosamente")
+
+except:
+    print("Hay un error")
 
 
-
-def alta(nombre:str, tipo:str, nivel:int, ruta:str, descripcion:str, tree):
+def alta(nombre: str, tipo: str, nivel: int, ruta: str, descripcion: str, tree):
     patron_caracteres = "^[A-Za-záéíóú]*$"  # regex para el campo cadena
     patron_enteros = "[0-9]"  # regex para el campo entero
-    #if re.match(patron_caracteres, nombre) & re.match(patron_enteros, nivel):
+    # if re.match(patron_caracteres, nombre) & re.match(patron_enteros, nivel):
     if re.match(patron_caracteres, nombre):
         con = conexion()
         cursor = con.cursor()
@@ -52,18 +50,18 @@ def alta(nombre:str, tipo:str, nivel:int, ruta:str, descripcion:str, tree):
         sql = "INSERT INTO aplicaciones (nombre, tipo, nivel, ruta, descripcion) VALUES(?, ?, ?, ?, ?)"
         cursor.execute(sql, data)
         con.commit()
-        messagebox.showinfo("Alta","Se guardo exitosamente")
+        messagebox.showinfo("Alta", "Se guardo exitosamente")
         actualizar_treeview(tree)
     else:
-        messagebox.showinfo("Alta","Error al guardar, verifique los datos ingresados en el campo NOMBRE.")
+        messagebox.showinfo("Alta", "Error al guardar, verifique los datos ingresados en el campo NOMBRE.")
 
 
-def consultar( tree ):
+def consultar(tree):
     actualizar_treeview(tree)
+
 
 def modificar(tree):
     pass
-
 
 
 def borrar(tree):
@@ -121,7 +119,6 @@ ruta.grid(row=4, column=0, sticky=W)
 descripcion = Label(root, text="Descripción")
 descripcion.grid(row=5, column=0, sticky=W)
 
-
 # Defino variables para tomar valores de campos de entrada
 nombre_val, tipo_val, nivel_val, ruta_val, descripcion_val = StringVar(), StringVar(), IntVar(), StringVar(), StringVar()
 w_ancho = 20
@@ -154,7 +151,9 @@ tree.heading("col3", text="Descripción")
 
 tree.grid(row=10, column=0, columnspan=4)
 
-boton_alta = Button(root, text="Alta", command=lambda: alta(nombre_val.get(), tipo_val.get(), nivel_val.get(), ruta_val.get(), descripcion_val.get(), tree))
+boton_alta = Button(root, text="Alta",
+                    command=lambda: alta(nombre_val.get(), tipo_val.get(), nivel_val.get(), ruta_val.get(),
+                                         descripcion_val.get(), tree))
 boton_alta.grid(row=6, column=1)
 
 boton_consulta = Button(root, text="Consultar", command=lambda: consultar(tree))
@@ -163,9 +162,7 @@ boton_consulta.grid(row=7, column=1)
 boton_borrar = Button(root, text="Borrar", command=lambda: borrar(tree))
 boton_borrar.grid(row=8, column=1)
 
-
 boton_modificar = Button(root, text="Modificar", command=lambda: modificar(tree))
 boton_modificar.grid(row=8, column=1)
 
 root.mainloop()
-
