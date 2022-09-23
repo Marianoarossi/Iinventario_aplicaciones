@@ -39,11 +39,18 @@ except:
     print("Hay un error")
 
 
+def val_string( nombre_campo:str, cadena:str) -> str:
+    patron_string = "^[A-Za-záéíóú]*$"
+    if not re.match(patron_string, cadena):
+        return f"El {nombre_campo} tiene caracteres inválidos \n"
+    else:
+        return ''
+
+
 def alta(nombre: str, tipo: str, nivel: int, ruta: str, descripcion: str, tree):
-    patron_caracteres = "^[A-Za-záéíóú]*$"  # regex para el campo cadena
-    patron_enteros = "[0-9]"  # regex para el campo entero
-    # if re.match(patron_caracteres, nombre) & re.match(patron_enteros, nivel):
-    if re.match(patron_caracteres, nombre):
+    errores:str = ''
+    errores += val_string('Nombre de la Aplicación', nombre)
+    if errores == '':
         con = conexion()
         cursor = con.cursor()
         data = (nombre, tipo, nivel, ruta, descripcion)
@@ -53,7 +60,7 @@ def alta(nombre: str, tipo: str, nivel: int, ruta: str, descripcion: str, tree):
         messagebox.showinfo("Alta", "Se guardo exitosamente")
         actualizar_treeview(tree)
     else:
-        messagebox.showinfo("Alta", "Error al guardar, verifique los datos ingresados en el campo NOMBRE.")
+        messagebox.showinfo("Alta", errores)
 
 
 def consultar(tree):
