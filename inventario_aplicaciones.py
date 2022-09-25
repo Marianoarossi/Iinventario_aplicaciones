@@ -85,6 +85,14 @@ def alta(id, nombre: str, tipo: str, nivel, ruta: str, descripcion: str, tree):
 def consultar(tree):
     actualizar_treeview(tree)
 
+def limpiar(tree):
+    id_val.set(0)
+    nombre_val.set('')
+    tipo_val.set('')
+    nivel_val.set('')
+    ruta_val.set('')
+    descripcion_val.set('')
+    boton_alta['text'] = "Agregar"
 
 def modificar(tree):
     valor = tree.selection()
@@ -116,15 +124,12 @@ def borrar(tree):
         messagebox.showinfo("Atención", f"La aplicación {mi_id} se eliminó correctamente")
 
 
-def validar_numerico(variable):
-    return variable.isdecimal()
 
 def validate_entry(text, new_text):
-    # Primero chequear que el contenido total no exceda los diez caracteres.
+    # Primero chequear que el contenido total no exceda los dos caracteres.
     if len(new_text) > 2:
         return False
-    # Luego, si la validación anterior no falló, chequear que el texto solo
-    # contenga números.
+    # Luego, si la validación anterior no falló, chequear que el texto solo contenga nros
     return text.isdecimal()
 
 
@@ -207,6 +212,7 @@ boton_alta = Button(
 boton_consulta = Button(root, text="Consultar", command=lambda: consultar(tree))
 boton_borrar = Button(root, text="Borrar", command=lambda: borrar(tree))
 boton_modificar = Button(root, text="Modificar", command=lambda: modificar(tree))
+boton_limpiar = Button(root, text="Limpiar campos", command=lambda: limpiar(tree))
 boton_salir = Button(root, text="Salir", command=root.quit)
 
 # --------------------------------------------------
@@ -233,8 +239,13 @@ entrada_tipo.grid(row=3, column=2)
 entrada_nivel.grid(row=4, column=2)
 entrada_ruta.grid(row=5, column=2)
 entrada_descripcion.grid(row=6, column=2)
+
 #Buttons
 boton_alta.grid(row=7, column=2, sticky=EW)
+boton_limpiar.grid(row=3, column=3, sticky=EW)
+boton_borrar.grid(row=15, column=1, sticky=EW)
+boton_modificar.grid(row=15, column=2, sticky=EW)
+boton_salir.grid(row=15, column=4, sticky=EW)
 
 #Título Detalle
 titulo_detalle.grid(row=8, column=0, columnspan=6, padx=1, pady=1, sticky=W + E)
@@ -251,9 +262,5 @@ tree.heading("#0", text="ID")
 tree.heading("col1", text="Nombre")
 tree.heading("col2", text="Tipo")
 tree.heading("col3", text="Descripción")
-
-boton_borrar.grid(row=15, column=1, sticky=EW)
-boton_modificar.grid(row=15, column=2, sticky=EW)
-boton_salir.grid(row=15, column=4, sticky=EW)
 
 root.mainloop()
