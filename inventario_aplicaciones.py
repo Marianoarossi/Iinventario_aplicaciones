@@ -1,4 +1,3 @@
-import tkinter
 from tkinter import *
 from tkinter import messagebox
 import sqlite3
@@ -8,7 +7,6 @@ import re
 # ##############################################
 # MODELO
 # ##############################################
-from tkinter.messagebox import OK
 
 
 def conexion():
@@ -37,7 +35,7 @@ try:
     messagebox.showinfo("CONEXION", "Base de Datos Creada exitosamente")
 
 except:
-    print("Hay un error")
+    print("Las base de datos no se creó o ya existe")
 
 
 def valid_string(nombre_campo: str, cadena: str) -> str:
@@ -59,7 +57,7 @@ def valid_int(nombre_campo: str, cadena: str) -> str:
 def alta(id, nombre: str, tipo: str, nivel, ruta: str, descripcion: str, tree):
     errores: str = ''
     errores += valid_string('Nombre de la Aplicación', nombre)
-    errores += valid_int('Nivel de Riesgo', nivel)
+    errores += valid_int('Nivel de Riesgo', str(nivel))
     if errores == '':
         #Hacer el Alta o la Modificación
         if boton_alta['text'] == "Actualizar":
@@ -118,8 +116,17 @@ def borrar(tree):
         messagebox.showinfo("Atención", f"La aplicación {mi_id} se eliminó correctamente")
 
 
-def edit_form():
-    pass
+def validar_numerico(variable):
+    return variable.isdecimal()
+
+def validate_entry(text, new_text):
+    # Primero chequear que el contenido total no exceda los diez caracteres.
+    if len(new_text) > 2:
+        return False
+    # Luego, si la validación anterior no falló, chequear que el texto solo
+    # contenga números.
+    return text.isdecimal()
+
 
 
 def actualizar_treeview(mitreview):
@@ -162,7 +169,7 @@ titulo = Label(root, text="Ingrese los datos de la Aplicación", bg="#76B6E3", f
 titulo_detalle = Label(root, text="Listado de Aplicaciones", bg="#76B6E3", fg="White", height=1, width=80)
 
 # Defino variables para tomar valores de campos de entrada
-id_val, nombre_val, tipo_val, nivel_val, ruta_val, descripcion_val = IntVar(), StringVar(), StringVar(), StringVar(), StringVar(), StringVar()
+id_val, nombre_val, tipo_val, nivel_val, ruta_val, descripcion_val = IntVar(), StringVar(), StringVar(), IntVar(), StringVar(), StringVar()
 w_ancho = 50
 
 # Etiquetas / Labels:
@@ -177,7 +184,10 @@ descripcion = Label(root, text="Descripción",bg="#FFFDFD")
 entrada_id = Entry(root, textvariable=id_val, state="readonly", width=10)
 entrada_nombre = Entry(root, textvariable=nombre_val, width=w_ancho)
 entrada_tipo = Entry(root, textvariable=tipo_val, width=w_ancho)
-entrada_nivel = Entry(root, textvariable=nivel_val, width=w_ancho)
+entrada_nivel = Entry(root, textvariable=nivel_val, width=w_ancho, validate="key",
+                      validatecommand=(root.register(validate_entry), "%S", "%P")
+                      )
+
 entrada_ruta = Entry(root, textvariable=ruta_val, width=w_ancho)
 entrada_descripcion = Entry(root, textvariable=descripcion_val, width=w_ancho)
 
