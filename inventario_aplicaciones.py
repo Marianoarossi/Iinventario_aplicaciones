@@ -1,160 +1,10 @@
 from tkinter import *
-from tkinter import messagebox
-import sqlite3
 from tkinter import ttk
-import re
+from utils import *
+from modelo import Abmc
 
-# ##############################################
-# MODELO
-# ##############################################
-
-
-def conexion():
-    con = sqlite3.connect("mibase.db")
-    return con
-
-
-def crear_tabla():
-    con = conexion()
-    cursor = con.cursor()
-    sql = """CREATE TABLE aplicaciones
-             (id INTEGER PRIMARY KEY AUTOINCREMENT,
-             nombre varchar(100) NOT NULL,
-             tipo varchar(20) NOT NULL,
-             nivel int NOT NULL, 
-             ruta varchar(200) NOT NULL,
-             descripcion varchar(500) NOT NULL)
-    """
-    cursor.execute(sql)
-    con.commit()
-
-
-try:
-    conexion()
-    crear_tabla()
-    messagebox.showinfo("CONEXION", "Base de Datos Creada exitosamente")
-
-except:
-    print("Las base de datos no se creó o ya existe")
-
-
-def valid_string(nombre_campo: str, cadena: str) -> str:
-    patron_string = "^[A-Za-záéíóú]*$"
-    if not re.match(patron_string, cadena):
-        return f"El {nombre_campo} tiene caracteres inválidos. Solo se pueden ingresar letras de la a la z \n"
-    else:
-        return ''
-
-
-def valid_int(nombre_campo: str, cadena: str) -> str:
-    patron_num = '^([0-9])*$'
-    if not re.match(patron_num, cadena):
-        return f"El {nombre_campo} tiene caracteres inválidos. Solo se pueden números \n"
-    else:
-        return ''
-
-
-def alta(id, nombre: str, tipo: str, nivel, ruta: str, descripcion: str, tree):
-    errores: str = ''
-    errores += valid_string('Nombre de la Aplicación', nombre)
-    errores += valid_int('Nivel de Riesgo', str(nivel))
-    if errores == '':
-        #Hacer el Alta o la Modificación
-        if boton_alta['text'] == "Actualizar":
-            con = conexion()
-            cursor = con.cursor()
-            data = ( nombre, tipo, nivel, ruta, descripcion, id)
-            sql = "UPDATE aplicaciones SET nombre = ?, tipo = ? , nivel = ?, ruta = ?, descripcion = ? WHERE id = ?"
-            cursor.execute(sql, data)
-            con.commit()
-            messagebox.showinfo("Modificación", "Se actualizó exitosamente")
-            actualizar_treeview(tree)
-        else:
-            con = conexion()
-            cursor = con.cursor()
-            data = (nombre, tipo, nivel, ruta, descripcion)
-            sql = "INSERT INTO aplicaciones (nombre, tipo, nivel, ruta, descripcion) VALUES(?, ?, ?, ?, ?)"
-            cursor.execute(sql, data)
-            con.commit()
-            messagebox.showinfo("Alta", "Se guardó exitosamente")
-            actualizar_treeview(tree)
-    else:
-        messagebox.showinfo("Alta", errores)
-
-
-def consultar(tree):
-    actualizar_treeview(tree)
-
-def limpiar(tree):
-    id_val.set(0)
-    nombre_val.set('')
-    tipo_val.set('')
-    nivel_val.set('')
-    ruta_val.set('')
-    descripcion_val.set('')
-    boton_alta['text'] = "Agregar"
-
-def modificar(tree):
-    valor = tree.selection()
-    item = tree.item(valor)
-    my_id = item['text']
-    app_sel = buscar_una_app(my_id)
-    id_val.set(my_id)
-    nombre_val.set(app_sel[1])
-    tipo_val.set(app_sel[2])
-    nivel_val.set(app_sel[3])
-    ruta_val.set(app_sel[4])
-    descripcion_val.set(app_sel[5])
-    boton_alta['text'] = "Actualizar"
-
-
-def borrar(tree):
-    valor = tree.selection()
-    item = tree.item(valor)
-    mi_id = item['text']
-    if messagebox.askokcancel("Atencion", f"Está seguro que desea eliminar la Aplicacion con ID: {mi_id}"):
-        con = conexion()
-        cursor = con.cursor()
-        # mi_id = int(mi_id)
-        data = (mi_id,)
-        sql = "DELETE FROM aplicaciones WHERE id = ?;"
-        cursor.execute(sql, data)
-        con.commit()
-        tree.delete(valor)
-        messagebox.showinfo("Atención", f"La aplicación {mi_id} se eliminó correctamente")
-
-
-
-def validate_entry(text, new_text):
-    # Primero chequear que el contenido total no exceda los dos caracteres.
-    if len(new_text) > 2:
-        return False
-    # Luego, si la validación anterior no falló, chequear que el texto solo contenga nros
-    return text.isdecimal()
-
-
-
-def actualizar_treeview(mitreview):
-    records = mitreview.get_children()
-    for element in records:
-        mitreview.delete(element)
-    sql = "SELECT * FROM aplicaciones ORDER BY id ASC"
-    con = conexion()
-    cursor = con.cursor()
-    datos = cursor.execute(sql)
-
-    resultado = datos.fetchall()
-    for fila in resultado:
-        mitreview.insert("", 0, text=fila[0], values=(fila[1], fila[2], fila[5]))
-
-
-def buscar_una_app( id ):
-    sql = f"SELECT * FROM aplicaciones WHERE id = {id}"
-    con = conexion()
-    cursor = con.cursor()
-    datos = cursor.execute(sql)
-    resultado = datos.fetchone()
-    return resultado
+# Creo el objeto ABMC
+abmc = Abmc()
 
 # ##############################################
 # VISTA
@@ -200,19 +50,19 @@ entrada_descripcion = Entry(root, textvariable=descripcion_val, width=w_ancho)
 boton_alta = Button(
     root,
     text="Agregar",
-    command=lambda: alta(
+    command=lambda: abmc.alta(
         id_val.get(),
         nombre_val.get(),
         tipo_val.get(),
         nivel_val.get(),
         ruta_val.get(),
         descripcion_val.get(),
-        tree)
+        tree, boton_alta)
     )
-boton_consulta = Button(root, text="Consultar", command=lambda: consultar(tree))
-boton_borrar = Button(root, text="Borrar", command=lambda: borrar(tree))
-boton_modificar = Button(root, text="Modificar", command=lambda: modificar(tree))
-boton_limpiar = Button(root, text="Limpiar campos", command=lambda: limpiar(tree))
+boton_consulta = Button(root, text="Consultar", command=lambda: abmc.consultar(tree))
+boton_borrar = Button(root, text="Borrar", command=lambda: abmc.borrar(tree))
+boton_modificar = Button(root, text="Modificar", command=lambda: abmc.modificar(tree, boton_alta,id_val, nombre_val, tipo_val, nivel_val, ruta_val, descripcion_val))
+boton_limpiar = Button(root, text="Limpiar campos", command=lambda: abmc.limpiar(tree, boton_alta,id_val, nombre_val, tipo_val, nivel_val, ruta_val, descripcion_val))
 boton_salir = Button(root, text="Salir", command=root.quit)
 
 # --------------------------------------------------
