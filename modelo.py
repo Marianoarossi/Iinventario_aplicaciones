@@ -6,12 +6,12 @@ from tkinter import messagebox
 class Abmc:
     def __init__(self):
         self.db = DataBase()
-        self.utilidades = Utils()
+        #self.utilidades = Utils()
 
     def alta(self, id, nombre: str, tipo: str, nivel, ruta: str, descripcion: str, tree, boton_alta):
         errores: str = ''
-        errores += self.utilidades.valid_string('Nombre de la Aplicación', nombre)
-        errores += self.utilidades.valid_int('Nivel de Riesgo', str(nivel))
+        errores += Utils.valid_string('Nombre de la Aplicación', nombre)
+        errores += Utils.valid_int('Nivel de Riesgo', str(nivel))
         if errores == '':
             #Hacer el Alta o la Modificación
             if boton_alta['text'] == "Actualizar":

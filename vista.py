@@ -20,7 +20,7 @@ class VistaInventario:
         # VISTA
         # ##############################################
         #Creamos el objeto utilidades
-        utilidades = Utils()       
+        #utilidades = Utils()       
 
         # Título, tamaño y color de la ventana principal
         self.root.title("Inventario de Aplicaciones")
@@ -53,7 +53,7 @@ class VistaInventario:
         entrada_tipo = Entry(self.root, textvariable=tipo_val, width=w_ancho)
         #utlizamos el metodo validate_entry para realizar las validaciones de regex
         entrada_nivel = Entry(self.root, textvariable=nivel_val, width=w_ancho, validate="key",
-                            validatecommand=(self.root.register(utilidades.validate_entry), "%S", "%P")
+                            validatecommand=(self.root.register(Utils.validate_entry), "%S", "%P")
                             )
 
         entrada_ruta = Entry(self.root, textvariable=ruta_val, width=w_ancho)
@@ -75,11 +75,11 @@ class VistaInventario:
         boton_consulta = Button(self.root, text="Consultar", command=lambda: self.abmc.consultar(tree))
         boton_borrar = Button(self.root, text="Borrar", command=lambda: self.abmc.borrar(tree))
         boton_modificar = Button(self.root, text="Modificar",
-                                 command=lambda: self.abmc.modificar(tree, boton_alta, id_val, nombre_val, tipo_val,
-                                                                     nivel_val, ruta_val, descripcion_val))
+                                command=lambda: self.abmc.modificar(tree, boton_alta, id_val, nombre_val, tipo_val,
+                                                                    nivel_val, ruta_val, descripcion_val))
         boton_limpiar = Button(self.root, text="Limpiar campos",
-                               command=lambda: self.abmc.limpiar(tree, boton_alta, id_val, nombre_val, tipo_val,
-                                                                 nivel_val, ruta_val, descripcion_val))
+                            command=lambda: self.abmc.limpiar(tree, boton_alta, id_val, nombre_val, tipo_val,
+                                                                nivel_val, ruta_val, descripcion_val))
         boton_salir = Button(self.root, text="Salir", command=self.root.quit)
 
         # --------------------------------------------------
