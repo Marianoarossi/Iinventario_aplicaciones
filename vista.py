@@ -7,7 +7,7 @@ from tkinter import Button
 from tkinter import W
 from tkinter import E
 from tkinter import EW
-from utils import *
+from utils import Utils
 from modelo import Abmc
 
 
@@ -19,6 +19,8 @@ class VistaInventario:
         # ##############################################
         # VISTA
         # ##############################################
+        #Creamos el objeto utilidades
+        utilidades = Utils()       
 
         # Título, tamaño y color de la ventana principal
         self.root.title("Inventario de Aplicaciones")
@@ -27,7 +29,7 @@ class VistaInventario:
 
         # Título del cuadro principal
         titulo = Label(self.root, text="Ingrese los datos de la Aplicación", bg="#76B6E3", fg="White", height=1,
-                       width=80)
+                    width=80)
         # Título del cuadro detalle
         titulo_detalle = Label(self.root, text="Listado de Aplicaciones", bg="#76B6E3", fg="White", height=1, width=80)
 
@@ -49,9 +51,10 @@ class VistaInventario:
         entrada_id = Entry(self.root, textvariable=id_val, state="readonly", width=10)
         entrada_nombre = Entry(self.root, textvariable=nombre_val, width=w_ancho)
         entrada_tipo = Entry(self.root, textvariable=tipo_val, width=w_ancho)
+        #utlizamos el metodo validate_entry para realizar las validaciones de regex
         entrada_nivel = Entry(self.root, textvariable=nivel_val, width=w_ancho, validate="key",
-                              validatecommand=(self.root.register(validate_entry), "%S", "%P")
-                              )
+                            validatecommand=(self.root.register(utilidades.validate_entry), "%S", "%P")
+                            )
 
         entrada_ruta = Entry(self.root, textvariable=ruta_val, width=w_ancho)
         entrada_descripcion = Entry(self.root, textvariable=descripcion_val, width=w_ancho)
