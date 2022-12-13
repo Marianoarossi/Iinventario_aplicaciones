@@ -51,7 +51,7 @@ class VistaInventario:
         entrada_id = Entry(self.root, textvariable=id_val, state="readonly", width=10)
         entrada_nombre = Entry(self.root, textvariable=nombre_val, width=w_ancho)
         entrada_tipo = Entry(self.root, textvariable=tipo_val, width=w_ancho)
-        #utlizamos el metodo validate_entry para realizar las validaciones de regex
+        #utlizamos el metodo estatico validate_entry para realizar las validaciones de regex
         entrada_nivel = Entry(self.root, textvariable=nivel_val, width=w_ancho, validate="key",
                             validatecommand=(self.root.register(Utils.validate_entry), "%S", "%P")
                             )

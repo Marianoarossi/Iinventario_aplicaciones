@@ -10,6 +10,7 @@ class Abmc:
 
     def alta(self, id, nombre: str, tipo: str, nivel, ruta: str, descripcion: str, tree, boton_alta):
         errores: str = ''
+        #Llamamos a los metodos estaticos
         errores += Utils.valid_string('Nombre de la Aplicación', nombre)
         errores += Utils.valid_int('Nivel de Riesgo', str(nivel))
         if errores == '':
