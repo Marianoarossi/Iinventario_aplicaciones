@@ -1,12 +1,13 @@
 from utils import Utils
 from db_functions import DataBase
 from tkinter import messagebox
+from logging import decorator_log
 
 
 class Abmc:
     def __init__(self):
         self.db = DataBase()
-        #self.utilidades = Utils()
+        # self.utilidades = Utils()
 
     def alta(self, id, nombre: str, tipo: str, nivel, ruta: str, descripcion: str, tree, boton_alta):
         errores: str = ''
@@ -16,23 +17,40 @@ class Abmc:
         if errores == '':
             #Hacer el Alta o la Modificación
             if boton_alta['text'] == "Actualizar":
-                cursor = self.db.connection.cursor()
-                data = ( nombre, tipo, nivel, ruta, descripcion, id)
-                sql = "UPDATE aplicaciones SET nombre = ?, tipo = ? , nivel = ?, ruta = ?, descripcion = ? WHERE id = ?"
-                cursor.execute(sql, data)
-                self.db.connection.commit()
-                messagebox.showinfo("Modificación", "Se actualizó exitosamente")
-                self.actualizar_treeview(tree)
+                self.update(id, nombre, tipo, nivel, ruta, descripcion)
             else:
-                cursor = self.db.connection.cursor()
-                data = (nombre, tipo, nivel, ruta, descripcion)
-                sql = "INSERT INTO aplicaciones (nombre, tipo, nivel, ruta, descripcion) VALUES(?, ?, ?, ?, ?)"
-                cursor.execute(sql, data)
-                self.db.connection.commit()
-                messagebox.showinfo("Alta", "Se guardó exitosamente")
-                self.actualizar_treeview(tree)
+                self.add(id, nombre, tipo, nivel, ruta, descripcion)
+
+            self.actualizar_treeview(tree)
         else:
             messagebox.showinfo("Alta", errores)
+
+    @decorator_log
+    def update(self, id, nombre: str, tipo: str, nivel, ruta: str, descripcion: str):
+        cursor = self.db.connection.cursor()
+        data = (nombre, tipo, nivel, ruta, descripcion, id)
+        sql = "UPDATE aplicaciones SET nombre = ?, tipo = ? , nivel = ?, ruta = ?, descripcion = ? WHERE id = ?"
+        cursor.execute(sql, data)
+        self.db.connection.commit()
+        messagebox.showinfo("Modificación", "Se actualizó exitosamente")
+
+    @decorator_log
+    def add(self, id, nombre: str, tipo: str, nivel, ruta: str, descripcion: str):
+        cursor = self.db.connection.cursor()
+        data = (nombre, tipo, nivel, ruta, descripcion)
+        sql = "INSERT INTO aplicaciones (nombre, tipo, nivel, ruta, descripcion) VALUES(?, ?, ?, ?, ?)"
+        cursor.execute(sql, data)
+        self.db.connection.commit()
+        messagebox.showinfo("Alta", "Se guardó exitosamente")
+
+    @decorator_log
+    def delete(self, mi_id):
+        cursor = self.db.connection.cursor()
+        # mi_id = int(mi_id)
+        data = (mi_id,)
+        sql = "DELETE FROM aplicaciones WHERE id = ?;"
+        return cursor.execute(sql, data)
+
 
     def consultar(self, tree):
         self.actualizar_treeview(tree)
@@ -64,14 +82,10 @@ class Abmc:
         item = tree.item(valor)
         mi_id = item['text']
         if messagebox.askokcancel("Atencion", f"Está seguro que desea eliminar la Aplicacion con ID: {mi_id}"):
-            cursor = self.db.connection.cursor()
-            # mi_id = int(mi_id)
-            data = (mi_id,)
-            sql = "DELETE FROM aplicaciones WHERE id = ?;"
-            cursor.execute(sql, data)
-            self.db.connection.commit()
-            tree.delete(valor)
-            messagebox.showinfo("Atención", f"La aplicación {mi_id} se eliminó correctamente")
+            if self.delete(mi_id):
+                self.db.connection.commit()
+                tree.delete(valor)
+                messagebox.showinfo("Atención", f"La aplicación {mi_id} se eliminó correctamente")
 
 
     def actualizar_treeview(self, mitreview):
